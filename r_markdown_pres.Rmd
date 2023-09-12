@@ -1,0 +1,126 @@
+---
+title: "R Markdown"
+author: "Charlie Berman"
+date: "2023-09-12"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## What is R Markdown
+
+- A way of creating documents with chunks of code, visualizations, etc. embedded into it
+- Relies on two packages: knitr and Pandoc
+  + knitr allows for the code to be embedded in the markdown document
+  + Pandoc allows for the document to be exported in multiple file formats
+
+## Benefits
+
+- Simplicity (allegedly)
+- Can cover several functions
+- Cannot do everything (in-depth typesetting)
+
+##
+- Convenient way to create documents with good formatting
+![Document Example.](/Users/charlesberman/Desktop/Econ368/R_markdown_presentation/doc_ex.png)
+
+## 
+- Can also be used to create websites
+![Website Example.](/Users/charlesberman/Desktop/Econ368/R_markdown_presentation/Website_ex.png)
+
+##
+- And dashboards
+![Dash Example.](/Users/charlesberman/Desktop/Econ368/R_markdown_presentation/dash_ex.png)
+
+## 
+- We can also embed code right into the program
+
+```{r echo = FALSE}
+set.seed = 8675309
+
+one_run_stock <- function(t = 0.5, mean_a = 0.15, sd_a = 0.2, mean_b = 0.12, 
+                          sd_b = 0.18, stock_a = 100, stock_b = 75, n_a = 100, 
+                          n_b = 100, nrep = 100){
+  one_estimate <- rep(0, times = nrep)
+  initial_wealth <- n_a * stock_a + n_b * stock_b
+  
+  for(i in 1:nrep){
+    b_a = rnorm(1, sd = sqrt(t))
+    b_b = rnorm(1, sd = sqrt(t))
+    stock_a_t <- stock_a * exp((mean_a - sd_a^2/2)*t + sd_a*b_a)
+    stock_b_t <- stock_b * exp((mean_b - sd_b^2/2)*t + sd_b*b_b)
+    loss_event = (n_a * stock_a_t + n_b * stock_b_t)/(n_a * stock_a + n_b * stock_b)
+    if(loss_event <= 0.9) one_estimate[i] <- 1
+  }
+  return(one_estimate)
+}
+
+draw_hist <- function(n = 100, t = 0.5){
+  full_estimates <- rep(0, times = n)
+  for(i in 1:n){
+    full_estimates[i] <- mean(one_run_stock(t = t))
+  }
+  hist(full_estimates, freq = FALSE, ylim = c(0,30), xlim = c(0,0.12), 
+       main = paste("Monte Carlo Sim with", n, "Runs and", t, "Time"))
+  text(mean(full_estimates), 25, round(mean(full_estimates),3))
+  abline(v = mean(full_estimates), col = "red", lwd = 2)
+  abline(v=quantile(full_estimates,c(0.05,0.95)), col = "green", lwd = 2)
+}
+
+par(mfrow = c(3,2))
+draw_hist()
+draw_hist(n = 1000)
+draw_hist(n = 10000)
+draw_hist(n = 10000, t = 0.75)
+draw_hist(n = 10000, t = 1)
+draw_hist(n = 10000, t = 2)
+```
+
+##
+- This is the code used for the previous plots
+![Code Example.](/Users/charlesberman/Desktop/Econ368/R_markdown_presentation/r_code.png)
+
+## All Uses
+-Convert R Markdown into multiple file types
+
+-Create notebooks with interactive code (similar to Jupyter notebook)
+
+-Make presentations (like this one)
+
+-Create dashboards
+
+-Shiny apps (Shiny is a package for creating websites in R)
+
+-Journal articles
+
+-Write books
+
+-Create websites
+
+
+
+Allaire, J. J., and Yihui Xie. “R Markdown: The Definitive Guide.” Bookdown.Org, 15 May 2023, bookdown.org/yihui/rmarkdown/. 
+
+
+## How to Get Started
+
+-First, open a new 'R Markdown' File
+![Step 1.](/Users/charlesberman/Desktop/Econ368/R_markdown_presentation/step_1.png)
+
+##
+-Next, choose the option you would like to use
+  + Document
+  + Presentation
+  + Shiny App
+  + From Template
+  
+![Step 2.](/Users/charlesberman/Desktop/Econ368/R_markdown_presentation/step_2.png)
+
+##
+- Add new chunks and text
+  + Chunks have the code, text is the text you see in the document
+
+
+![Step 3.](/Users/charlesberman/Desktop/Econ368/R_markdown_presentation/step_3.png)
